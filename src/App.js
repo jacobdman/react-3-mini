@@ -6,6 +6,8 @@ import './App.css';
 // Toast notification dependencies
 import { ToastContainer, toast } from 'react-toastify';
 
+const BASE_URL = 'http://joes-autos.herokuapp.com/api'
+
 class App extends Component {
   constructor( props ) {
     super( props );
@@ -29,23 +31,49 @@ class App extends Component {
   }
 
   getVehicles() {
+    axios({
+      method: 'GET',
+      url: BASE_URL + '/vehicles'
+    }).then(response => {
+      this.setState({ vehiclesToDisplay: response.data })
+    })
     // axios (GET)
     // setState with response -> vehiclesToDisplay
   }
 
   getPotentialBuyers() {
+    axios({
+      method: 'GET',
+      url: BASE_URL + '/buyers'
+    }).then(response => {
+      this.setState({ buyersToDisplay: response.data})
+    })
     // axios (GET)
     // setState with response -> buyersToDisplay
   }
 
   sellCar( id ) {
+    axios({
+      method: 'DELETE',
+      url: BASE_URL + '/vehicles/' + id
+    }).then(response => {
+      axios({
+        method: 'GET',
+        url: BASE_URL + '/vehicles'
+      })
+    })
     // axios (DELETE)
     // setState with response -> vehiclesToDisplay
   }
 
   filterByMake() {
     let make = this.refs.selectedMake.value;
-
+    axios({
+      method: 'GET',
+      url: BASE_URL + '/vehicles?make=' + make
+    }).then(response => {
+      this.setState({ vehiclesToDisplay: response.data.vehicles })
+    })
     // axios (GET)
     // setState with response -> vehiclesToDisplay
   }
@@ -71,6 +99,18 @@ class App extends Component {
       price: this.refs.price.value
     };
 
+    axios({
+      method: 'POST',
+      url: BASE_URL + '/vehicles',
+      data: newCar,
+    }).then(response => {
+      axios({
+        method: 'GET',
+        url: BASE_URL + '/vehicles'
+      })
+        
+      this.setState({ vehiclesToDisplay: response.data.vehicles })
+    })
     // axios (POST)
     // setState with response -> vehiclesToDisplay
   }
@@ -82,6 +122,17 @@ class App extends Component {
       address: this.refs.address.value
     };
 
+    axios({
+      method: 'POST',
+      url: BASE_URL + '/buyers',
+      data: newBuyer,
+    }).then(response => {
+      axios({
+        method: 'GET',
+        url: BASE_URL + '/buyers'
+      })
+      this.setState({ buyersToDisplay: response.data.buyers })
+    })
     //axios (POST)
     // setState with response -> buyersToDisplay
   }
